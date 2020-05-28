@@ -5,43 +5,43 @@
 library(RColorBrewer)
 library(dplyr)
 
-# read_RDSlist <- function(files, path, codeloclen = 3){
-#   # Reads RDS files (files) into an object list.
-#   # Path: path to RDS (optional).
-#   # codeloclen: length of codeloc id to remove from list name 'defaults to 3).
-#   l <- vector("list", length(files))
-#   for(f in 1:length(files)){
-#     if(missing(path)){
-#       x <- readRDS(files[f])
-#     }
-#     else{
-#       x <- readRDS(paste0(path, files[f]))
-#     }
-#     l[[f]] <- x
-#   }
-#   # Naming list
-#   fnames <- sapply(files, FUN = function(x) substr(x, 1, nchar(x) - 4)) # Delete .rds extension
-#   
-#   fnames <- sapply(fnames, FUN = function(x) substr(x[1], codeloclen + 7, nchar(x[1]))) # substrinf XXX_cooc_
-#   
-#   names(l) <- fnames
-#   return(l)
-# }
+read_RDSlist <- function(files, path, codeloclen = 3){
+  # Reads RDS files (files) into an object list.
+  # Path: path to RDS (optional).
+  # codeloclen: length of codeloc id to remove from list name 'defaults to 3).
+  l <- vector("list", length(files))
+  for(f in 1:length(files)){
+    if(missing(path)){
+      x <- readRDS(files[f])
+    }
+    else{
+      x <- readRDS(paste0(path, files[f]))
+    }
+    l[[f]] <- x
+  }
+  # Naming list
+  fnames <- sapply(files, FUN = function(x) substr(x, 1, nchar(x) - 4)) # Delete .rds extension
 
-# read_RDS_in_folder <- function(folder, codeloclen = 3){
-#   # Read only RDS files in the folder 'folder'.
-#   # folder is the folder to read in.
-#   # Codeloclen is the length of the region identifier in the file name 
-#   #     (typically KAR => 3).
-#   # Returns an RDS objects list.
-#   
-#   files <- list.files(path = folder)
-#   files <- files[grepl(".rds", files, fixed = TRUE)]
-#   
-#   grlist <- read_RDSlist(files = files, path = folder, codeloclen = codeloclen) # Read all RDS
-#   
-#   return(grlist)
-# }
+  fnames <- sapply(fnames, FUN = function(x) substr(x[1], codeloclen + 7, nchar(x[1]))) # substrinf XXX_cooc_
+
+  names(l) <- fnames
+  return(l)
+}
+
+read_RDS_in_folder <- function(folder, codeloclen = 3){
+  # Read only RDS files in the folder 'folder'.
+  # folder is the folder to read in.
+  # Codeloclen is the length of the region identifier in the file name
+  #     (typically KAR => 3).
+  # Returns an RDS objects list.
+
+  files <- list.files(path = folder)
+  files <- files[grepl(".rds", files, fixed = TRUE)]
+
+  grlist <- read_RDSlist(files = files, path = folder, codeloclen = codeloclen) # Read all RDS
+
+  return(grlist)
+}
 
 get_same_space_scale <- function(nklist, scale, clust_scale){
   # Get the same spatial for a list of cooc_network objects.

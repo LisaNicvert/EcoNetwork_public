@@ -1,0 +1,56 @@
+"spp_mysites","label","specif_guild3","guild_realm","weight"
+"aardwolf","aardwolf","Medium carnivores","Carnivore",8.5
+"baboon","baboon","Omnivores","Omnivore",22.25
+"blackfootedcat","black-footed cat","Small carnivores","Carnivore",1.675
+"blesbok","blesbok","Water-dependent grazers","Herbivore",62
+"buffalo","buffalo","Water-dependent grazers","Herbivore",600
+"bushbuck","bushbuck","Small nonsocial browsers","Herbivore",37.5
+"bushpig","bushpig","Omnivores","Omnivore",88
+"caracal","caracal","Medium carnivores","Carnivore",13
+"cheetah","cheetah","Large carnivores","Carnivore",51
+"civet","civet","Medium carnivores","Carnivore",12.5
+"duikercommon","duiker","Small nonsocial browsers","Herbivore",13
+"eland","eland","Medium-sized social mixed diet","Herbivore",600
+"elephant","elephant","Extra-large browsers","Herbivore",4275
+"foxbateared","bat-eared fox","Small carnivores","Carnivore",4
+"foxcape","cape fox","Small carnivores","Carnivore",3.35
+"gemsbokoryx","oryx","Medium-sized social mixed diet","Herbivore",225
+"genetcapelargespotted","large spotted genet","Small carnivores","Carnivore",1.6
+"genetcommonsmallspotted","small spotted genet","Small carnivores","Carnivore",2
+"giraffe","giraffe","Large browsers","Herbivore",1117.5
+"hartebeestred","red hartebeest","Water-dependent grazers","Herbivore",135
+"hippopotamus","hippopotamus","Nonruminants","Herbivore",1866.9
+"honeybadger","honey badger","Medium carnivores","Carnivore",11
+"hyenabrown","brown hyena","Large carnivores","Carnivore",29.7
+"hyenaspotted","spotted hyena","Large carnivores","Carnivore",67
+"impala","impala","Water-dependent grazers","Herbivore",50.75
+"jackalblackbacked","jackal","Medium carnivores","Carnivore",9.5
+"klipspringer","klipspringer","Small nonsocial browsers","Herbivore",11.5
+"kudu","kudu","Large browsers","Herbivore",215
+"leopard","leopard","Large carnivores","Carnivore",61.5
+"lion","lion","Large carnivores","Carnivore",165.5
+"meerkatsuricate","suricate","Small carnivores","Carnivore",0.76
+"mongoosebanded","banded mongoose","Small carnivores","Carnivore",1.2
+"mongoosedwarf","dwarf mongoose","Small carnivores","Carnivore",0.268
+"mongooseslender","slender mongoose","Small carnivores","Carnivore",0.548
+"mongoosesmallcapegrey","small grey cape mongoose","Small carnivores","Carnivore",NA
+"mongoosewater","marsh mongoose","Medium carnivores","Carnivore",4
+"mongoosewhitetailed","white-tailed mongoose","Small carnivores","Carnivore",3.5
+"mongooseyellow","yellow mongoose","Small carnivores","Carnivore",0.675
+"reedbuck","reedbuck","Water-dependent grazers","Herbivore",48.5
+"reedbuckmountain","mountain reedbuck","Water-dependent grazers","Herbivore",30
+"rhebokgrey","grey rhebok","Small nonsocial browsers","Herbivore",19
+"rhinocerosblack","black rhinoceros","Nonruminants","Herbivore",1100
+"rhinoceroswhite","white rhinoceros","Nonruminants","Herbivore",1775
+"serval","serval","Medium carnivores","Carnivore",16.5
+"springbok","springbok","Medium-sized social mixed diet","Herbivore",36
+"steenbok","steenbok","Small nonsocial browsers","Herbivore",11.5
+"tsessebe","tsessebe","Medium-sized social mixed diet","Herbivore",126.7
+"warthog","warthog","Omnivores","Omnivore",75.9
+"waterbuck","waterbuck","Water-dependent grazers","Herbivore",217.5
+"wildcat","wildcat","Small carnivores","Carnivore",4.25
+"wilddog","wild dog","Large carnivores","Carnivore",26.5
+"wildebeestblack","black wildebeest","Water-dependent grazers","Herbivore",146
+"wildebeestblue","blue wildebeest","Water-dependent grazers","Herbivore",203.75
+"zebraburchells","Burchell's zebra","Nonruminants","Herbivore",272.5
+"zebramountain","mountain zebra","Nonruminants","Herbivore",255
