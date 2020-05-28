@@ -1,0 +1,167 @@
+---
+title: "Spatial clustering to define spatial scales and synthetic habitat covariates"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE}
+# source("../functions/spatial_clustering.R")
+source("../functions/data_processing.R")
+library(ade4)
+library(adegraphics)
+library(sf)
+
+covariates <- readRDS("covariates.rds")
+```
+
+# Camera-level covariates
+Let's establish clusters of similar cameras in terms of habitat in order to build a synthetic habitat covariate.
+
+```{r, include = FALSE}
+sort(covariates$dist_road)
+unique(covariates$habitat_mucina)
+sort(covariates$avg_trees)
+sort(covariates$dist_water)
+```
+
+We perform a multivariate analysis on the data:
+
+```{r}
+# Prepare data for mv analysis
+cov.mva <- covariates %>% select(-code_loc) %>%
+        st_drop_geometry() %>% remove_rownames() %>%  column_to_rownames("site_ID")
+cov.mva
+
+hillsmith <- dudi.hillsmith(cov.mva, scannf = FALSE, nf = 3)
+
+scatter(hillsmith, plabels.optim = TRUE)
+```
+
+Then, we perform hierarchical clustering for habitat covariates at camera level to define the synthetic habitat covariate classes.
+
+```{r}
+dist <- dist.dudi(hillsmith)
+
+fit <- hclust(dist, method = "complete")
+plot(fit)
+
+threshold <- 5.5
+
+covcam <- cutree(fit, h = threshold)
+
+f <- covcam[match(rownames(hillsmith$li), names(covcam))]
+fact <- as.factor(f)
+
+s.class(hillsmith$li, fac = fact,
+        ellipse = 0, starSize = 0, chullSize = 1,
+        col = TRUE)
+```
+
+Spatial visialisation of the habitat covariates associated with cameras:
+
+```{r, echo = FALSE}
+cluplot <- as.data.frame(covcam) %>% rownames_to_column("site_ID")
+plot <- covariates %>% left_join(cluplot, by = 'site_ID')
+
+ggplot() + geom_sf(data = plot, aes(col = as.factor(covcam)), show.legend = FALSE) + 
+        theme_bw() + ggtitle("Habitat covariates")
+```
+
+# Not constrained clustering
+Now we build camera clusters based on distance to get different inference scales.
+
+## Sites clustering (get different scales)
+
+```{r}
+clust <- covariates %>% dplyr::select(site_ID)
+
+#distance matrix
+distmat <- st_distance(clust)
+rownames(distmat) <- clust$site_ID
+colnames(distmat) <- clust$site_ID
+
+#clustering
+fit <- hclust(as.dist(distmat), method = "complete")
+plot(fit)
+```
+
+```{r}
+# Threshold
+threshold.coarse <- 6000
+threshold.fine <- 2500
+
+# Tree cutting
+clusters.coarse <- cutree(fit, h = threshold.coarse)
+
+clusters.fine <- cutree(fit, h = threshold.fine)
+
+# Plotting
+tab <- data.frame(clusters.coarse) %>% rownames_to_column("site_ID")
+tab2 <- data.frame(clusters.fine) %>% rownames_to_column("site_ID")
+tab <- tab %>% left_join(tab2, by = "site_ID")
+
+clust <- clust %>% left_join(tab, by = "site_ID")
+```
+
+Result:
+
+```{r, echo = FALSE}
+ggplot() + geom_sf(data = clust, aes(col = as.factor(clusters.fine))) + ggtitle("Fine clusters")
+ggplot() + geom_sf(data = clust, aes(col = as.factor(clusters.coarse))) + ggtitle("Coarse clusters")
+```
+
+## Sites covariates
+Replace the original camera-level covariate by mean/new factor level.
+```{r}
+cov <- covariates %>% left_join(tab, by = "site_ID")
+
+cov.fine <- cov %>% st_drop_geometry() %>% group_by(clusters.fine) %>%
+        summarise(mean_road = mean(dist_road),
+                  mean_trees = mean(avg_trees),
+                  mean_water =  mean(dist_water),
+                  habitat_mucina = as.factor(paste(unique(habitat_mucina), collapse = ".")))  %>%
+        mutate(clusters.fine = paste0("SAM", clusters.fine)) %>%
+        column_to_rownames("clusters.fine")
+cov.fine
+
+cov.coarse <- cov %>% st_drop_geometry() %>% group_by(clusters.coarse) %>%
+        summarise(mean_road = mean(dist_road),
+                  mean_trees = mean(avg_trees),
+                  mean_water =  mean(dist_water),
+                  habitat_mucina = as.factor(paste(unique(habitat_mucina), collapse = ".")))  %>%
+        mutate(clusters.coarse = paste0("SAM", clusters.coarse)) %>%
+        column_to_rownames("clusters.coarse")
+cov.coarse
+```
+
+```{r}
+hillsmith.coarse <- dudi.hillsmith(cov.coarse, nf = 2, scannf = FALSE)
+dist.cov.coarse <- dist.dudi(hillsmith.coarse)
+
+fit.coarse <- hclust(dist.cov.coarse, method = "complete")
+plot(fit.coarse)
+
+threshold.coarse <- 3.8
+cov.coarse <- cutree(fit.coarse, h = threshold.coarse)
+```
+
+```{r}
+hillsmith.fine <- dudi.hillsmith(cov.fine, nf = 3, scannf = FALSE)
+dist.cov.fine <- dist.dudi(hillsmith.fine)
+
+fit.fine <- hclust(dist.cov.fine, method = "complete")
+plot(fit.fine)
+
+threshold.fine <- 5
+cov.fine <- cutree(fit.fine, h = threshold.fine)
+```
+
+Final cluster covariates:
+```{r}
+cov.coarse
+cov.fine
+```
+
