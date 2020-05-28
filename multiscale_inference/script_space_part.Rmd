@@ -1,24 +1,23 @@
 ---
 title: "Spatial/diel partitioning of coocurrences"
-output: html_document
+output: pdf_document
 date: "`r Sys.time()`"
 params:
   thr: 5
   selcrit: BIC
-  file: ../filter/filtered_spa/not_annoying/seasons/MAD_dry.csv
+  file: ../data/SAM_sample_data.csv
   durations: !r c(lubridate::ddays(20), lubridate::ddays(30))
-  codeloc: MAD
-  saving_folder: Debug/
+  codeloc: SAM
+  saving_folder: output/SAM_thr4_BIC/
   use_default_offset: FALSE
   use_habcov: TRUE
   use_hour: TRUE
   hour_offset: "none"
   hour_slices: !r chron::times(c('00:00:00', '5:00:00', '9:30:00', 
                                 '14:30:00', '19:00:00','23:59:59'))
-  spatial_scales: !r c("site", "site_all",
-                        "cam", "cam_all",
-                        "clust_coarse", "clust_coarse_all",
-                        "clust_fine", "clust_fine_all")
+  spatial_scales: !r c("cam",
+                        "clust_coarse",
+                        "clust_fine")
 ---
 
 ```{r setup, include=FALSE, fig.align='center', warning=FALSE}
@@ -40,15 +39,6 @@ source("../functions/analysis.R")
 library(gridExtra)
 ```
 
-```{r, include = FALSE}
-if(length(params$codeloc) == 1){
-  if(params$codeloc != 'PLN'){ # ncolumns (29 except PLN = 30)
-  ncol <- 29
-  }else{
-    ncol <- 30
-  }
-}
-```
 
 ```{r create_dir, include=FALSE, eval=FALSE}
 dir.create(params$saving_folder) # Prints warning and does nothing if directory already exists
@@ -57,6 +47,8 @@ dir.create(params$saving_folder) # Prints warning and does nothing if directory 
 
 # Import and prepare data
 ```{r import_data, include = FALSE}
+ncol = 7
+
 # Site observations
 if(length(params$file) == 1){
   d.f <- read.csv(params$file, header = TRUE, sep = ",",  
@@ -69,21 +61,19 @@ if(length(params$file) == 1){
 d.f <- clean_table(d.f, rm_bycatch = TRUE, pres_abs = FALSE)$data
 
 # Import spatial clusters
-clusters <- read.csv("../SIT_SPACLUST_Rmd/clusters_hierclust.csv")
+clusters <- read.csv("../data/clusters/clusters_hierclust.csv")
 
 # Import spatial covariates
-covcoarse <- read.csv("../SIT_SPACLUST_Rmd/covariates_coarse.csv")
-covfine <- read.csv("../SIT_SPACLUST_Rmd/covariates_fine.csv")
-covcam <- read.csv("../SIT_SPACLUST_Rmd/covariates_cam.csv")
-
-# Offset for cameras when all... is used
-cov_raw <- read_csv("../clean_data/cov/cleaned_covariates_best/covariates_complete_habitat_best.csv")
-cov <- cov_raw %>% dplyr::select(code_loc, site_ID, cam_days2)
+covcoarse <- read.csv("../data/clusters/covariates_coarse.csv")
+covfine <- read.csv("../data/clusters/covariates_fine.csv")
+covcam <- read.csv("../data/clusters/covariates_cam.csv")
 ```
 
 
 We determine the filtering thresholds as a compromise between data loss and noise. Therefore, we used curves plotted in quality_check.
-```{r plot_curve, echo = FALSE}
+
+
+```{r plot_curve, echo = FALSE, fig.width= 8, fig.height=4}
 d.cooc <- clean_table(d.f)
 d.cooc$data <- d.cooc$data
 filter_rare_spp(d.cooc, filter = FALSE) + geom_hline(yintercept = params$thr)
@@ -105,23 +95,6 @@ if(length(params$file) == 1){
 }
 ```
 
-Compute an offset per camera. We define the offset as the active camera duration, ie the number of days it spent activated. We define activated as taking a picture before 10 days.
-
-```{r offset_cam_all, echo = FALSE}
-span <- ddays(20) # limit activation span
-
-count_days <- active_duration(d.f, span)
-
-message("Offset not equal to total duration:")
-count_days %>% mutate(active_duration = as.numeric(active_duration, 'days'),
-                      total_duration = as.numeric(total_duration, 'days')) %>%
-  dplyr::select(site_ID, total_duration, active_duration, offset) %>% filter(total_duration != offset)
-message("-------------------------------------------")
-
-offset.cam.all <- count_days %>% dplyr::select(site_ID, offset)  %>% 
-  column_to_rownames("site_ID")
-offset.cam.all
-```
 
 Extract appropriate clustering and glue it to the dataframe:
 
@@ -157,16 +130,6 @@ if(!params$use_default_offset){
 }
 ```
 
-Also define an offset for the all days duration:
-```{r offset1_all, echo = FALSE}
-active.cam <- count_days %>% dplyr::select(site_ID, offset)
-
-c1 <- c1 %>% left_join(active.cam, by = 'site_ID')
-offset1.all <- c1 %>% group_by(coarse_scale) %>% summarise(offset = sum(offset, na.rm = TRUE)) %>%
-  column_to_rownames('coarse_scale')
-offset1.all
-```
-
 * clusters 2
 ```{r prep_clusters2, echo = FALSE}
 c2.1 <- clusters %>% select(site_ID, fine_scale)
@@ -197,15 +160,6 @@ if(!params$use_default_offset){
 }
 ```
 
-Also define an offset for the all days duration:
-```{r offset2_all, echo = FALSE}
-c2 <- c2 %>% left_join(active.cam, by = 'site_ID')
-offset2.all <- c2 %>% group_by(fine_scale) %>% summarise(offset = sum(offset, na.rm = TRUE)) %>%
-  column_to_rownames('fine_scale')
-
-offset2.all
-```
-
 Also, if habitat covariates should be used:
 ```{r habcov, echo = FALSE}
 cov.cam <- covcam %>% dplyr::select(site_ID, covariates) %>% 
@@ -223,7 +177,6 @@ cov.2 <- covfine %>% dplyr::select(cluster, covariates) %>%
   rename('clust2' = 'covariates') %>% droplevels()
 cov.2
 ```
-
 
 If we aggregated by hour, spans might be of unequal durations:
 ```{r}
@@ -289,165 +242,8 @@ if(params$use_hour & params$hour_offset == "duration"){
 # Spatial and temporal data exploration
 We will now infer several networks for which the spatio-temporal aggregation scales differ, from coarser to finer.
 
-## By site
-First, we perform the analysis on the whole study duration.
-```{r site_all, echo = FALSE}
-if("site_all" %in% params$spatial_scales){
-  
-  stop("Not maintained, esp. for hour offsets")
-  
-  opt <- "sitehour"
-  nc <- 2
-  
-  # Infer networks
-  if(params$use_default_offset | params$hour_offset != "none"){
-      f =  Abundance ~ 1 + offset(log(Offset)) 
-  }else{
-    f =  Abundance ~ 1
-  }
-  
-  net <- infer_networks(cooc_tab = d.f,
-                 opt = opt, thr = params$thr, 
-                 hourcuts = params$hour_slices,
-                 ncols = nc, 
-                 hour_offset = hour_offset,
-                 use_default_offset = params$use_default_offset,
-                 formula = f)
-
-  if(sum(net$network$coefficient_path()$Coeff) != 0){ # If not all the graphs are empty
-    tryCatch({ # Try inference
-      nk <- pick_network(net$network,
-                         net$prep, crit = params$selcrit)
-      },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-    if(exists("nk")){ # If successful
-      if(nk$density != 0){ # And if the network has at least 1 edge
-          f.cooc <- cooc_network(cooc_data = net$prep, pln_nk = nk)
-          saveRDS(f.cooc,
-                  file = paste0(params$saving_folder,
-                                ncodeloc, "_cooc_", "all_site.rds"))
-          message("File saved")
-          rm(net, nk, f.cooc)
-      }
-    }
-  }else{
-    message("Empty graph")
-    rm(net)
-  }
-}else{
-  message("Not performed.")
-}
-```
-
-Now, we repeat the process, but in order to get several samples, we will use several time windows.
-```{r site, echo = FALSE}
-if("site" %in% params$spatial_scales){
-  
-  stop("Not maintained, esp. for hour offsets")
-  
-  opt <- "sitetimehour"
-  nc <- 3
-  
-  for(i in 1:length(params$durations)){
-    # Get current duration
-    d <- as.numeric(params$durations[i], "day")
-    
-    # Infer networks
-    if(params$use_default_offset | params$hour_offset != "none"){
-      f =  Abundance ~ 1 + offset(log(Offset)) 
-    }else{
-      f =  Abundance ~ 1
-    }
-    
-    net <- infer_networks(cooc_tab = d.f, lag = params$durations[i], 
-                   opt = opt, thr = params$thr,
-                   hourcuts = params$hour_slices,
-                   hour_offset = params$hour_offset,
-                   use_default_offset = params$use_default_offset, 
-                   ncols = nc, 
-                   formula = f)
-    
-    if(sum(net$network$coefficient_path()$Coeff) != 0){ # If not all the graphs are empty
-      tryCatch({ # Try inference
-        nk <- pick_network(net$network, 
-                           net$prep, crit = params$selcrit)
-        },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-      if(exists("nk")){ # If successful
-        if(nk$density != 0){ # And if the network has at least 1 edge
-            f.cooc <- cooc_network(cooc_data = net$prep, pln_nk = nk)
-            saveRDS(f.cooc, 
-                    file = paste0(params$saving_folder, 
-                                  ncodeloc, "_cooc_", d, "d_site.rds"))
-            message("File saved")
-            rm(net, nk, f.cooc)
-        }
-      }
-    }else{
-      message("Empty graph")
-      rm(net)
-    }
-  }
-}else{
-  message("Not performed.")
-}
-```
 
 ## With coarse clusters
-First, we perform the analysis on the whole study duration.
-```{r clusters_coarse_all, echo = FALSE}
-if("clust_coarse_all" %in% params$spatial_scales){
-  
-  stop("Not maintained, esp. for hour offsets")
-  
-  if(params$use_hour){
-    opt <- "sitehourclust"
-    nc <- 3
-  }else{
-    opt <- "siteclust"
-    nc <- 2
-  }
-  
-  # Infer networks
-  if(params$use_habcov | params$hour_offset != "none"){
-    f =  Abundance ~ 1 + clust1 + offset(log(Offset)) 
-  }else{
-    f =  Abundance ~ 1 + offset(log(Offset)) 
-  }
-  
-  net <- infer_networks(cooc_tab = df.clust1,
-                 opt = opt, thr = params$thr, 
-                 hourcuts = params$hour_slices,
-                 ncols = nc, 
-                 hour_offset = params$hour_offset,
-                 use_default_offset = FALSE, # Here we want to use a custom offset
-                 offset = offset1.all, merge_off_by = "cluster_ID",
-                 cov = cov.1, merge_cov_by = "cluster_ID",
-                 formula = f)
-  
-  if(sum(net$network$coefficient_path()$Coeff) != 0){ # If not all the graphs are empty
-    tryCatch({ # Try inference
-      nk <- pick_network(net$network,
-                         net$prep, crit = params$selcrit)
-      },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-    if(exists("nk")){ # If successful
-      if(nk$density != 0){ # And if the network has at least 1 edge
-          f.cooc <- cooc_network(cooc_data = net$prep, pln_nk = nk)
-          saveRDS(f.cooc,
-                  file = paste0(params$saving_folder,
-                                ncodeloc, "_cooc_", "all_clust1.rds"))
-          message("File saved")
-          rm(net, nk, f.cooc)
-      }
-    }
-  }else{
-    message("Empty graph")
-    rm(net)
-  }
-}else{
-  message("Not performed.")
-}
-```
-
-Now, we repeat the process, but in order to get several samples, we will use several time windows.
 ```{r clusters_coarse, echo = FALSE}
 if("clust_coarse" %in% params$spatial_scales){
   if(params$use_hour){
@@ -531,60 +327,6 @@ if("clust_coarse" %in% params$spatial_scales){
 ```
 
 ## With fine clusters
-Again, we perform the analysis on the whole study duration.
-```{r clusters_fine_all, echo = FALSE}
-if("clust_fine_all" %in% params$spatial_scales){
-  
-  stop("Not maintained, esp. for hour offsets")
-  
-  if(params$use_hour){
-    opt <- "sitehourclust"
-    nc <- 3
-  }else{
-    opt <- "siteclust"
-    nc <- 2
-  }
-  
-  # Infer networks
-  if(params$use_habcov){
-    f =  Abundance ~ 1 + clust2 + offset(log(Offset)) 
-  }else{
-    f =  Abundance ~ 1 + offset(log(Offset)) 
-  }
-  
-  net <- infer_networks(cooc_tab = df.clust2,
-                 opt = opt, thr = params$thr, 
-                 hourcuts = params$hour_slices,
-                 ncols = nc,
-                 use_default_offset = FALSE,
-                 offset = offset2.all, merge_off_by = "cluster_ID",
-                 cov = cov.2, merge_cov_by = "cluster_ID",
-                 formula = f)
-  
-  if(sum(net$network$coefficient_path()$Coeff) != 0){ # If not all the graphs are empty
-    tryCatch({ # Try inference
-      nk <- pick_network(net$network,
-                         net$prep, crit = params$selcrit)
-      },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-    if(exists("nk")){ # If successful
-      if(nk$density != 0){ # And if the network has at least 1 edge
-          f.cooc <- cooc_network(cooc_data = net$prep, pln_nk = nk)
-          saveRDS(f.cooc,
-                  file = paste0(params$saving_folder,
-                                ncodeloc, "_cooc_", "all_clust2.rds"))
-          message("File saved")
-          rm(net, nk, f.cooc)
-      }
-    }
-  }else{
-    message("Empty graph")
-    rm(net)
-  }
-}else{
-  message("Not performed.")
-}
-```
-
 ```{r clusters_fine, echo = FALSE}
 if("clust_fine" %in% params$spatial_scales){
   if(params$use_hour){
@@ -670,62 +412,6 @@ if("clust_fine" %in% params$spatial_scales){
 ```
 
 ## By camera
-Again, we perform the analysis on the whole study duration.
-```{r cam_all, echo = FALSE}
-if("cam_all" %in% params$spatial_scales){
-  
-  stop("Not maintained, esp. for hour offsets")
-  
-  if(params$use_hour){
-    opt <- "sitehourcam"
-    nc <- 3
-  }else{
-    opt <- "sitecam"
-    nc <- 2
-  }
-  
-  # Infer networks
-  if(params$use_habcov){
-    f =  Abundance ~ 1 + cov_fac + offset(log(Offset))
-  }else{
-    f =  Abundance ~ 1 + offset(log(Offset))
-  }
-  
-  ncol(d.f)
-  
-  net <- infer_networks(cooc_tab = d.f,
-                 opt = opt, thr = params$thr, 
-                 hourcuts = params$hour_slices,
-                 use_default_offset = FALSE,
-                 ncols = nc,
-                 offset = offset.cam.all, merge_off_by = "site_ID",
-                 cov = cov.cam, merge_cov_by = "site_ID",
-                 formula = f)
-  
-  if(sum(net$network$coefficient_path()$Coeff) != 0){ # If not all the graphs are empty
-    tryCatch({ # Try inference
-      nk <- pick_network(net$network,
-                         net$prep, crit = params$selcrit)
-      },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
-    if(exists("nk")){ # If successful
-      if(nk$density != 0){ # And if the network has at least 1 edge
-          f.cooc <- cooc_network(cooc_data = net$prep, pln_nk = nk)
-          saveRDS(f.cooc,
-                  file = paste0(params$saving_folder,
-                                ncodeloc, "_cooc_", "all_cam.rds"))
-          message("File saved")
-          rm(net, nk, f.cooc)
-      }
-    }
-  }else{
-    message("Empty graph")
-    rm(net)
-  }
-}else{
-  message("Not performed.")
-}
-```
-
 ```{r cam, echo = FALSE}
 if("cam" %in% params$spatial_scales){
   if(params$use_hour){
@@ -826,7 +512,7 @@ codeloclen <- nchar(ncodeloc)
 grlist <- read_RDSlist(files, params$saving_folder, codeloclen = codeloclen) # Read all RDS
 
 # --- Create common layout ---
-traits <- read.csv("../clean_data/traits/my_not_annoying_spp_traits.csv")
+traits <- read.csv("../data/traits/traits.csv")
 
 traits.sub <- traits %>% dplyr::select(spp_mysites, guild_realm, specif_guild3, weight)
 spp <- get_nodes_list(grlist) # get nodes list
@@ -834,19 +520,18 @@ spp <- get_nodes_list(grlist) # get nodes list
 clayout <- common_layout(nodes = spp, traits = traits.sub, 
                          colname_for_nodes_in_traits = 'spp_mysites')
 
-cols.prep <- traits %>% dplyr::select(guild_realm, specif_guild3, spp_mysites)
-
-cols <- cols.prep %>% filter(spp_mysites %in% spp)
-cols2 <- get_guild_colours(traits = cols)
+traits.filtered <- traits %>% dplyr::filter(spp_mysites %in% spp)
+labs <- traits.filtered %>% dplyr::select(spp_mysites, label) %>% column_to_rownames("spp_mysites")
+cols <- get_guild_colours(traits = traits.filtered)
 
 grlist_ordered <- reorder_network_list(grlist,
                                        arrange = c("scale", "n", "time")) # Reorder
 
 graphs <- lapply(grlist_ordered, FUN = function(x){
-  plot_network(x, nodes_colour = cols2, base_layout = clayout, s = .5) +
+  plot_network(x, nodes_colour = cols, base_layout = clayout, s = .5, label = labs) +
     ggtitle(paste(as.numeric(x$timestep, 'days'), "days",
                   paste(unlist(x$space_scale), collapse = " ")))
-  }) # plot function
+}) # plot function
 
 # Fixed length / width
 ncols = length(params$durations)
