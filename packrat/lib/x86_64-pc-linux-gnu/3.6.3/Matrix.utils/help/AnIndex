@@ -1,0 +1,6 @@
+aggregate.Matrix	aggregate.Matrix
+dMcast	dMcast
+join.Matrix	merge.Matrix
+Matrix.utils	Matrix.utils
+merge.Matrix	merge.Matrix
+rBind.fill	rBind.fill

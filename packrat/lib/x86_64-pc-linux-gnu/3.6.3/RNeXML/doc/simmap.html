@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Carl Boettiger" />
+<meta name="author" content="Scott Chamberlain" />
+<meta name="author" content="Rutger Vos" />
+<meta name="author" content="Hilmar Lapp" />
+
+
+<title>Extending NeXML: an example based on simmap</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Extending NeXML: an example based on simmap</h1>
+<h4 class="author">Carl Boettiger</h4>
+<h4 class="author">Scott Chamberlain</h4>
+<h4 class="author">Rutger Vos</h4>
+<h4 class="author">Hilmar Lapp</h4>
+
+
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Extending NeXML to simmap}
+-->
+<div id="extending-the-nexml-standard-through-metadata-annotation." class="section level2">
+<h2>Extending the NeXML standard through metadata annotation.</h2>
+<p>Here we illustrate this process using the example of stochastic character mapping <span class="citation">(Huelsenbeck, Nielsen, and Bollback 2003)</span>. A stochastic character map is simply an annotation of the branches on a phylogeny, assigning each section of each branch to a particular “state” (typically of a morphological characteristic).</p>
+<p><span class="citation">Bollback (2006)</span> provides a widely used stand-alone software implementation of this method in the software <code>simmap</code>, which modified the standard Newick tree format to express this additional information. This can break compatibility with other software, and creates a format that cannot be interpreted without additional information describing this convention. By contrast, the NeXML extension is not only backwards compatible but contains a precise and machine-readable description of what it is encoding.</p>
+<p>In this example, we illustrate how the additional information required to define a stochastic character mapping (a <code>simmap</code> mapping) in NeXML.</p>
+<p><span class="citation">Revell (2012)</span> describes the <code>phytools</code> package for R, which includes utilities for reading, manipulating, and writing <code>simmap</code> files in R. In this example, we also show how to define <code>RNeXML</code> functions that map the R representation used by Revell (an extension of the <code>ape</code> class) into the NeXML extension we have defined by using <code>RNeXML</code> functions.</p>
+<p>Since a stochastic character map simply assigns different states to parts of a branch (or edge) on the phylogenetic tree, we can create a NeXML representation by annotating the <code>edge</code> elements with appropriate <code>meta</code> elements. These elements need to describe the character state being assigned and the duration (in terms of branch-length) that the edge spends in that state (Stochastic character maps are specific to time-calibrated or ultrametric trees).</p>
+<p>NeXML already defines the <code>characters</code> element to handle discrete character traits (<code>nex:char</code>) and the states they can assume (<code>nex:state</code>). We will thus reuse the <code>characters</code> element for this purpose, referring to both the character trait and the states by the ids assigned to them in that element. (NeXML’s convention of referring to everything by id permits a single canonical definition of each term, making it clear where additional annotation belongs). For each edge, we need to indicate:</p>
+<ul>
+<li>That our annotation contains a stochastic character mapping reconstruction</li>
+<li>Since many reconstructions are possible for a single edge, we give each reconstruction an id</li>
+<li>We indicate for which character trait we are defining the reconstruction</li>
+<li>We then indicate which states the character assumes on that edge. For each state realized on the edge, that involves stating:
+<ul>
+<li>the state assignment</li>
+<li>the duration (length of time) for which the edge spends in the given state</li>
+<li>the order in which the state changes happen (Though we could just assume state transitions are listed chronologically, NeXML suggests making all data explicit, rather than relying on the structure of the data file to convey information).</li>
+</ul></li>
+</ul>
+<p>Thus the annotation for an edge that switches from state <code>s2</code> to state <code>s1</code> of character <code>cr1</code> would be constructed like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"> m &lt;-<span class="st"> </span><span class="kw">meta</span>(<span class="st">&quot;simmap:reconstructions&quot;</span>, <span class="dt">children =</span> <span class="kw">c</span>(</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">        <span class="kw">meta</span>(<span class="st">&quot;simmap:reconstruction&quot;</span>, <span class="dt">children =</span> <span class="kw">c</span>(</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">          <span class="kw">meta</span>(<span class="st">&quot;simmap:char&quot;</span>, <span class="st">&quot;cr1&quot;</span>),</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">          <span class="kw">meta</span>(<span class="st">&quot;simmap:stateChange&quot;</span>, <span class="dt">children =</span> <span class="kw">c</span>(</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">            <span class="kw">meta</span>(<span class="st">&quot;simmap:order&quot;</span>, <span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">            <span class="kw">meta</span>(<span class="st">&quot;simmap:length&quot;</span>, <span class="st">&quot;0.2030&quot;</span>),</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">            <span class="kw">meta</span>(<span class="st">&quot;simmap:state&quot;</span>, <span class="st">&quot;s2&quot;</span>))),</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">          </a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">          <span class="kw">meta</span>(<span class="st">&quot;simmap:char&quot;</span>, <span class="st">&quot;cr1&quot;</span>),</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">          <span class="kw">meta</span>(<span class="st">&quot;simmap:stateChange&quot;</span>, <span class="dt">children =</span> <span class="kw">c</span>(</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">            <span class="kw">meta</span>(<span class="st">&quot;simmap:order&quot;</span>, <span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">            <span class="kw">meta</span>(<span class="st">&quot;simmap:length&quot;</span>, <span class="st">&quot;0.0022&quot;</span>),</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">            <span class="kw">meta</span>(<span class="st">&quot;simmap:state&quot;</span>, <span class="st">&quot;s1&quot;</span>)))</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">          ))))</a></code></pre></div>
+<p>Of course writing out such a definition manually becomes tedious quickly. Because these are just R commands, we can easily define a function that can loop over an assignment like this for each edge, extracting the appropriate order, length and state from an existing R object such as that provided in the <code>phytools</code> package.<br />
+Likewise, it is straightforward to define a function that reads this data using the <code>RNeXML</code> utilities and converts it back to the <code>phytools</code> package. The full implementation of this mapping can be seen in the <code>simmap_to_nexml()</code> and the <code>nexml_to_simmap()</code> functions provided in the <code>RNeXML</code> package.</p>
+<p>As the code indicates, the key step is simply to define the data in meta elements. In so doing, we have defined a custom namespace, <code>simmap</code>, to hold our variables. This allows us to provide a URL with more detailed descriptions of what each of these elements mean:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">nex &lt;-<span class="st"> </span><span class="kw">add_namespaces</span>(<span class="kw">c</span>(<span class="dt">simmap =</span> <span class="st">&quot;https://github.com/ropensci/RNeXML/tree/master/inst/simmap.md&quot;</span>))</a></code></pre></div>
+<p>At that URL we have posted a simple description of each term.</p>
+<p>Using this convention we can generate NeXML files containing <code>simmap</code> data, read those files into R, and convert them back into the <code>phytools</code> package format. These simple functions serve as further illustration of how <code>RNeXML</code> can be used to extend the NeXML standard. We illustrate their use briefly here, starting with loading a <code>nexml</code> object containing a <code>simmap</code> reconstruction into R:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">f &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;examples&quot;</span>, <span class="st">&quot;simmap_ex.xml&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;RNeXML&quot;</span>)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">simmap_ex &lt;-<span class="st"> </span><span class="kw">read.nexml</span>(f)</a></code></pre></div>
+<p>The <code>get_trees()</code> function can be used to return an <code>ape::phylo</code> tree as usual. <code>RNeXML</code> automatically detects the <code>simmap</code> reconstruction data and returns includes this in a <code>maps</code> element of the <code>ape::phylo</code> object, for use with other <code>phytools</code> functions.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">phy &lt;-<span class="st"> </span><span class="kw">nexml_to_simmap</span>(simmap_ex)</a></code></pre></div>
+<p>We can then use various functions from <code>phytools</code> designed for <code>simmap</code> objects <span class="citation">(Revell 2012)</span>, such as the plotting function:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">library</span>(<span class="st">&quot;phytools&quot;</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">plotSimmap</span>(phy)</a></code></pre></div>
+<pre><code>no colors provided. using the following legend:
+       A        B        C 
+ &quot;black&quot;    &quot;red&quot; &quot;green3&quot; </code></pre>
+<div class="figure">
+<img src="data:image/png;base64,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" alt="Stochastic character mapping on a phylogeny, as generated by the phytools package after parsing the simmap-extended NeXML." />
+<p class="caption">Stochastic character mapping on a phylogeny, as generated by the phytools package after parsing the simmap-extended NeXML.</p>
+</div>
+<p>Likewise, we can convert the object back in the NeXML format and write it out to file to be read by other users.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">nex &lt;-<span class="st"> </span><span class="kw">simmap_to_nexml</span>(phy) </a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">nexml_write</span>(nex, <span class="st">&quot;simmap.xml&quot;</span>)</a></code></pre></div>
+<pre><code>[1] &quot;simmap.xml&quot;</code></pre>
+<p>Though other NeXML parsers (for instance, for Perl or Python) have not been written explicitly to express <code>simmap</code> data, those parsers will nonetheless be able to successfully parse this file and expose the <code>simmap</code> data to the user.</p>
+<div id="refs" class="references">
+<div id="ref-Bollback_2006">
+<p>Bollback, JonathanP. 2006. <em>BMC Bioinformatics</em> 7 (1). Springer Science + Business Media: 88. <a href="https://doi.org/10.1186/1471-2105-7-88">https://doi.org/10.1186/1471-2105-7-88</a>.</p>
+</div>
+<div id="ref-Huelsenbeck_2003">
+<p>Huelsenbeck, John P., Rasmus Nielsen, and Jonathan P. Bollback. 2003. “Stochastic Mapping of Morphological Characters.” <em>Systematic Biology</em> 52 (2). Oxford University Press (OUP): 131–58. <a href="https://doi.org/10.1080/10635150390192780">https://doi.org/10.1080/10635150390192780</a>.</p>
+</div>
+<div id="ref-Revell_2012">
+<p>Revell, Liam J. 2012. “Phytools: An R Package for Phylogenetic Comparative Biology (and Other Things).” <em>Methods in Ecology and Evolution</em> 3: 217–23.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

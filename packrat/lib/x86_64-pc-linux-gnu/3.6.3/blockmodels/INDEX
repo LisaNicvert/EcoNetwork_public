@@ -1,0 +1,31 @@
+BM_bernoulli            Perform estimation on blockmodels for bernoulli
+                        probability distribution
+BM_bernoulli_covariates
+                        Perform estimation on blockmodels for bernoulli
+                        probability distribution aith covariates
+BM_bernoulli_covariates_fast
+                        Perform estimation on blockmodels for bernoulli
+                        probability distribution aith covariates
+BM_bernoulli_multiplex
+                        Perform estimation on blockmodels for multiplex
+                        binary networks
+BM_gaussian             Perform estimation on blockmodels for gaussian
+                        probability distribution
+BM_gaussian_covariates
+                        Perform estimation on blockmodels for gaussian
+                        probability distribution with covariates
+BM_gaussian_multivariate
+                        Perform estimation on blockmodels for
+                        multivariate gaussian probability distribution
+BM_gaussian_multivariate_independent
+                        Perform estimation on blockmodels for
+                        multivariate independent homoscedastic gaussian
+                        probability distribution
+BM_gaussian_multivariate_independent_homoscedastic
+                        Perform estimation on blockmodels for
+                        multivariate independent homoscedastic gaussian
+                        probability distribution
+BM_poisson              Perform estimation on blockmodels for poisson
+                        probability distribution
+BM_poisson_covariates   Perform estimation on blockmodels for poisson
+                        probability distribution aith covariates

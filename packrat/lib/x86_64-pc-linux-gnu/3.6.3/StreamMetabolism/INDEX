@@ -1,0 +1,18 @@
+Cs                      Saturation Concentration at temp
+DOTemp                  Rhode River Street Pier-Maryland data set
+Kt                      Temperature Correction For Reaeration Value
+ODobbins                O'Conner Dobbins Surface Renewal Method for
+                        calculating Rearration Coeffiecient
+SM                      Calculate Ecosystem Production with the Single
+                        Station Method
+cfs.lps                 Convert from cubic feet per second to liters
+                        per second
+contiguous.zoo          contiguous.zoo
+dC.dt                   Change in Oxygen per time step
+fmt.chron               Format Dates
+lps.cfs                 Liters Per Second to Cubic Feet per Second
+lps.cms                 Liters per second to cubic meters per second
+read.production         Read in Time Series Data as zoo Object
+simp                    Numeric Integration Using Simpson's method
+sunrise.set             Calculate Sunrise Sunset Times
+window_chron            Time Windows of Diurnal Curves

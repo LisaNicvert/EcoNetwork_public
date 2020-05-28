@@ -1,0 +1,7 @@
+cpness                  Core-peripheriness measure
+disPairwise             Computation of the dissimilarity matrix
+                        (pairwise beta-diversity) for a set of networks
+divPartition            Partitionning network diversity in alpha, beta
+                        and gamma diversity
+econetwork-package      Analyzing Ecological Networks
+getMetaweb              Get metaweb

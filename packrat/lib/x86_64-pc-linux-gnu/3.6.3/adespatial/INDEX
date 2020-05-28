@@ -1,0 +1,83 @@
+Cperiodogram            Contingency periodogram
+LCBD.comp               Compute LCBD from any D matrix
+ScotchWhiskey           Scotch Whiskey Data Set
+TBI                     TBI: Difference between multivariate
+                        observations at T1 and T2
+WRperiodogram           Whittaker-Robinson periodogram
+aem                     Construct asymmetric eigenvector maps (AEM)
+aem.build.binary        Construct a site-by-edge binary matrix
+aem.time                AEM for time series
+aem.weight.edges        Weight edges when constructing AEM variables
+bacProdxy               Bacterial production data set
+beta.div                Beta diversity computed as Var(Y)
+beta.div.comp           Decompose D in replacement and richness
+                        difference components
+chooseCN                Function to choose a connection network
+constr.hclust           Space- And Time-Constrained Clustering
+constr.hclust-class     Class For Constrained Hiereachical Clustering
+create.dbMEM.model      Combine dbMEM matrices corresponding to groups
+                        of sites
+dbmem                   dbMEM spatial eigenfunctions
+dist.ldc                Dissimilarity matrices for community
+                        composition data
+envspace.test           Perform a test of the shared space-environment
+                        fraction of a variation partitioning using
+                        torus-translation (TT) or Moran Spectral
+                        Randomisation (MSR)
+forward.sel             Forward selection with multivariate Y using
+                        permutation under reducel model
+forward.sel.par         Parametric forward selection of explanatory
+                        variables in regression and RDA
+give.thresh             Compute the maximum distance of the minimum
+                        spanning tree based on a distance matrix
+global.rtest            Global and local tests
+listw.candidates        Function to create a list of spatial weighting
+                        matrices
+listw.explore           Interactive tool to generate R code that
+                        creates a spatial weighting matrix
+listw.select            Function to optimize the selection of a spatial
+                        weighting matrix and select the best subset of
+                        eigenvectors (MEM, Moran's Eigenvector Maps)
+mastigouche             Mastigouche Lake network data set
+mem.select              Selection of the best subset of spatial
+                        eigenvectors (MEM, Moran's Eigenvector Maps)
+mfpa                    Multi-frequential periodogram analysis
+moran.bounds            Function to compute extreme values of Moran's I
+moran.randtest          Function to compute Moran's index of spatial
+                        autocorrelation
+moranNP.randtest        Function to compute positive and negative parts
+                        of Moran's index of spatial autocorrelation
+mspa                    Multi-Scale Pattern Analysis
+msr                     Moran spectral randomization
+msr.4thcorner           Moran spectral randomization for fourth-corner
+                        analysis
+msr.mantelrtest         Moran spectral randomization for Mantel test
+msr.varipart            Moran spectral randomization for variation
+                        partitioning
+mst.nb                  Function to compute neighborhood based on the
+                        minimum spanning tree
+multispati              Multivariate spatial analysis
+ortho.AIC               Compute AIC for models with orthonormal
+                        explanatory variables
+orthobasis.poly         Function to compute polynomial of geographical
+                        coordinates
+plot.TBI                Plots of the outputs of a temporal beta
+                        diversity analysis
+plot.constr.hclust      Plotting Method For Space- And Time-Constrained
+                        Clustering
+plot.orthobasisSp       Function to display Moran's Eigenvector Maps
+                        (MEM) and other spatial orthogonal bases
+rotation                Rotate a set of point by a certain angle
+scalogram               Function to compute a scalogram
+scores.listw            Function to compute and manage Moran's
+                        Eigenvector Maps (MEM) of a listw object
+stimodels               Space-time interaction in ANOVA without
+                        replication
+test.W                  Function to compute and test eigenvectors of
+                        spatial weighting matrices
+tpaired.krandtest       Paired t-tests of differences between T1 and T2
+                        for each species
+tpaired.randtest        Permutational paired t-test
+trichoptera             Trichoptera data set
+variogmultiv            Function to compute multivariate empirical
+                        variogram

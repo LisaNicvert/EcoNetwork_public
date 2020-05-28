@@ -1,0 +1,38 @@
+library(adegraphics)
+pdf("s1d.density.pdf")
+
+set.seed(40)
+x1 <- rnorm(1000)
+g11 <- s1d.density(x1)
+g12 <- s1d.density(x1, col = FALSE, ppoly.col = "blue", p1d.rev = TRUE)
+g13 <- s1d.density(x1, col = TRUE, ppoly.col = "blue", p1d.hori = FALSE)
+g14 <- s1d.density(x1, col = TRUE, p1d.hori = FALSE, p1d.rev = TRUE)
+
+update(g11, ppolygons.border = "red")
+update(g11, col = FALSE, ppolygons.col = "black")
+update(g11, ppolygons.lwd = 3, ppolygons.lty = 3, ppolygons.alpha = 1)
+update(g11, ylim = c(-0.04, 0.5))
+
+set.seed(50)
+x2 <- c(rnorm(1000, mean = -0.5, sd = 0.5), rnorm(1000, mean = 1))
+fact <- rep(c("A", "B"), each = 1000)
+g21 <- s1d.density(x2, fact, col = c("red", "blue"))
+g22 <- s1d.density(x2, fact, col = FALSE, ppoly.col = 2:3)
+g23 <- s1d.density(x2, fact, col = FALSE, ppoly.col = 2:3, p1d.rev = TRUE)
+g24 <- s1d.density(x2, fact, col = FALSE, ppoly.col = 2:3, p1d.horizontal = FALSE)
+g25 <- s1d.density(x2, fact, col = FALSE, ppoly.col = 2:3, p1d.horizontal = FALSE, p1d.rev = TRUE)
+
+set.seed(60)
+x3 <- rnorm(1000)
+g31 <- s1d.density(x3)
+g32 <- s1d.density(x3, p1d.rug.draw = FALSE)
+g33 <- s1d.density(x3, p1d.rug.draw = FALSE, p1d.rev = TRUE)
+g34 <- s1d.density(x3, p1d.rug.draw = FALSE, p1d.hori = FALSE)
+g35 <- s1d.density(x3, p1d.rug.draw = FALSE, p1d.hori = FALSE, p1d.rev = TRUE)
+
+update(g31, p1d.rev = TRUE)
+update(g32, p1d.rev = TRUE)
+update(g33, p1d.rev = FALSE)
+update(g34, p1d.rev = TRUE)
+update(g35, p1d.rev = FALSE)
+

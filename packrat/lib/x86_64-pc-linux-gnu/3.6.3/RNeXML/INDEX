@@ -1,0 +1,58 @@
+.callGeneric            Calls the given generic with the given
+                        arguments
+.methodWithNext         Saves the next method in the method meta data
+.sigLabel               Create a label for a method signature
+Annotated-class         Class of objects that have metadata as lists of
+                        meta elements
+New                     new with namespaced class name
+add_basic_meta          Add basic metadata
+add_characters          Add character data to a nexml object
+add_meta                Add metadata to a nexml file
+add_namespaces          Add namespaces
+add_trees               add_trees
+c,meta-method           Concatenate meta elements into a ListOfmeta
+c,nexml-method          Concatenate nexml files
+charzero_as_empty       Treats zero-length character vectors as empty
+                        strings
+coalesce_               Front-end to dplyr::coalesce to deal with NULL
+                        vectors
+expand_prefix           Expand namespace-prefixed string
+findNextMethod          Finds the method that callNextMethod() should
+                        chain to
+flatten_multiphylo      Flatten a multiphylo object
+get_all_meta            Get flattened list of meta annotations
+get_characters          Get character data.frame from nexml
+get_characters_list     Extract the character matrix
+get_citation            Get citation from metadata
+get_flat_trees          get_flat_trees
+get_level               get_level
+get_license             Get license from metadata
+get_meta                Extracts meta objects matching properties
+get_metadata            get_metadata
+get_metadata_values     Get the value(s) for metadata
+get_namespaces          get namespaces
+get_rdf                 Extract rdf-xml from a NeXML file
+get_taxa                get_taxa
+get_taxa_list           get_taxa_list
+get_trees               extract a phylogenetic tree from the nexml
+get_trees_list          extract all phylogenetic trees in ape format
+lcapply                 Compact list then lapply
+meta                    Constructor function for metadata nodes
+nexml-class             Class representing a NeXML document
+nexml.tree              Constructor for the respective class
+nexml_add               add elements to a new or existing nexml object
+nexml_figshare          publish nexml to figshare
+nexml_get               Get the desired element from the nexml object
+nexml_publish           publish nexml files to the web and receive a
+                        DOI
+nexml_read              Read NeXML files into various R formats
+nexml_validate          validate nexml using the online validator tool
+nexml_write             Write nexml files
+reset_id_counter        reset id counter
+simmap_to_nexml         Convert phylo with attached simmap to nexml
+                        object
+slot,ResourceMeta-method
+                        Access or set slot of S4 object
+summary,nexml-method    Summary method for nexml objects
+taxize_nexml            taxize nexml
+toPhylo                 nexml to phylo

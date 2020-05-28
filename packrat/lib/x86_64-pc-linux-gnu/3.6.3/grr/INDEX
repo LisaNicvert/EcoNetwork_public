@@ -1,0 +1,11 @@
+convertBase             Convert string representations of numbers in
+                        any base to any other base.
+extract                 Extract/return parts of objects
+grr                     Alternative Implementations of Base R Functions
+matches                 Value Matching
+order2                  Ordering vectors
+sample2                 A wrapper for 'sample.int' and 'extract' that
+                        makes it easy to quickly sample rows from any
+                        object, including Matrix and sparse matrix
+                        objects.
+sort2                   Sorting vectors

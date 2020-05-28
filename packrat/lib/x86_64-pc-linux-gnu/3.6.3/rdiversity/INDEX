@@ -1,0 +1,56 @@
+chainsaw                Function to cut phylogeny from present day
+                        species to a specified depth.
+check_partition         Check partition matrix
+check_phypartition      check_phypartition
+check_similarity        Check similarity matrix
+get_title               Get title
+hs_parameters           Historical species parameters
+inddiv                  Calculate individual-level diversity
+meta_gamma              Metacommunity gamma diversity
+metacommunity           Coerce to 'metacommunity'
+metacommunity-class     metacommunity-class
+metadiv                 Calculate metacommunity-level diversity
+norm_alpha              Normalised alpha (low level diversity
+                        component)
+norm_beta               Normalised beta (low level diversity component)
+norm_meta_alpha         Normalised metacommunity alpha diversity
+norm_meta_beta          Normalised metacommunity beta diversity
+norm_meta_rho           Normalised metacommunity rho diversity
+norm_rho                Normalised rho (low level diversity component)
+norm_sub_alpha          Normalised subcommunity alpha diversity
+norm_sub_beta           Normalised subcommunity beta diversity
+norm_sub_rho            Normalised subcommunity rho diversity
+phy_abundance           Calculate abundance of historical species
+phy_struct              Calculate phylogenetic structure matrix
+plot_diversity          Plot diversity
+power_mean              Power mean of vector elements
+powermean               Calculate power mean
+powermean-class         powermean-class
+qD                      Hill number / naive diversity with no
+                        similarity
+qDZ                     Similarity-sensitive diversity
+qDZ_single              Similarity-sensitive diversity of a single
+                        population
+qD_single               Hill number / naive diversity of a single
+                        population
+raw_alpha               Raw alpha (low level diversity component)
+raw_beta                Raw beta (low level diversity component)
+raw_gamma               Gamma (low level diversity component)
+raw_meta_alpha          Raw metacommunity alpha diversity
+raw_meta_beta           Raw metacommunity beta diversity
+raw_meta_rho            Raw metacommunity rho diversity
+raw_rho                 Raw rho (low level diversity component)
+raw_sub_alpha           Raw subcommunity alpha diversity
+raw_sub_beta            Raw subcommunity beta diversity
+raw_sub_rho             Raw subcommunity rho diversity
+rdiversity-package      rdiversity
+relativeentropy         Calculate relative entropy
+relativeentropy-class   relativeentropy-class
+repartition             Repartition metacommunity
+similarity_shimatani    Taxonomic similarity matrix
+smatrix                 Phylogenetic similarity matrix (ultrametric)
+sub_gamma               Subcommunity gamma diversity
+subdiv                  Calculate subcommunity-level diversity
+summarise               Summary function
+tbar                    Calculate T_bar
+zmatrix                 Similarity matrix

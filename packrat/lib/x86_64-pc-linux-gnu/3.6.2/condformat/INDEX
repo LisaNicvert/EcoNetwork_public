@@ -1,0 +1,51 @@
++.condformat_tbl        Combines data with formatting rules
+                        (deprecated)
+cf_field_to_css         How to export a cf_field to CSS
+cf_field_to_gtable      How to export a cf_field to grob
+cf_field_to_latex       How to export cf values to latex
+condformat              Conditional formatting for data frames
+condformat-shiny        Shiny bindings for condformat
+condformat2excel        Writes the table to an Excel workbook
+condformat2grob         Converts the table to a grid object
+condformat2html         Converts the table to a htmlTable object
+condformat2latex        Converts the table to LaTeX code
+condformat2widget       Converts the table to a htmlTableWidget
+knit_print.condformat_tbl
+                        Print method for knitr, exporting to HTML or
+                        LaTeX as needed
+print.condformat_tbl    Prints the data frame in an html page and shows
+                        it.
+rule_css                Apply a CSS style property as a conditional
+                        formatting rule
+rule_fill_bar           Fill column with a bar of a length proportional
+                        to a value
+rule_fill_discrete      Fill column with discrete colors
+rule_fill_discrete_     Fill column with discrete colors (deprecated)
+rule_fill_discrete_old
+                        Fill column with discrete colors (deprecated)
+rule_fill_gradient      Fill column with sequential colour gradient
+rule_fill_gradient2     Fill column with sequential color gradient
+rule_fill_gradient2_    Fill column with divergent color gradient
+                        (deprecated)
+rule_fill_gradient2_old
+                        Fill column with divergent color gradient
+                        (deprecated)
+rule_fill_gradient_     Fill column with sequential colour gradient
+                        (deprecated)
+rule_fill_gradient_old
+                        Fill column with sequential colour gradient
+                        (deprecated)
+rule_text_bold          Use bold text if a condition is met
+rule_text_color         Give a color to the text according to some
+                        expression
+show_columns            Selects the variables to be printed
+show_columns_           Show columns (deprecated)
+show_columns_old        Selects the variables to be printed
+                        (deprecated)
+show_rows               Selects the rows to be printed
+show_rows_old           Selects the rows to be printed (deprecated)
+theme_caption           Sets the caption of a condformat object
+theme_grob              Customizes appearance of condformat object
+theme_htmlTable         Customizes appearance of condformat object
+theme_htmlWidget        Customizes appearance of condformat object
+theme_kable             Customizes appearance of condformat object

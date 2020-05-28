@@ -1,0 +1,8 @@
+Matrix.utils            Data.frame-Like Operations on Sparse and Dense
+                        'Matrix' Objects
+aggregate.Matrix        Compute summary statistics of a Matrix
+dMcast                  Casts or pivots a long 'data frame' into a wide
+                        sparse matrix
+merge.Matrix            Merges two Matrices or matrix-like objects
+rBind.fill              Combine matrixes by row, fill in missing
+                        columns

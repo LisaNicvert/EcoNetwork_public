@@ -1,0 +1,63 @@
+PLN                     Poisson lognormal model
+PLNLDA                  Poisson lognormal model towards Linear
+                        Disciminant Analysis
+PLNLDAfit               An R6 Class to represent a PLNfit in a LDA
+                        framework
+PLNPCA                  Poisson lognormal model towards Principal
+                        Component Analysis
+PLNPCAfamily            An R6 Class to represent a collection of
+                        PLNPCAfit
+PLNPCAfit               An R6 Class to represent a PLNfit in a PCA
+                        framework
+PLNfamily               An R6 Class to represent a collection of PLNfit
+PLNfit                  An R6 Class to represent a PLNfit in a
+                        standard, general framework
+PLNmodels               PLNmodels
+PLNnetwork              Poisson lognormal model towards sparse network
+                        inference
+PLNnetworkfamily        An R6 Class to represent a collection of
+                        PLNnetworkfit
+PLNnetworkfit           An R6 Class to represent a PLNfit in a sparse
+                        inverse covariance framework
+coef.PLNLDAfit          Extracts model coefficients from objects
+                        returned by 'PLNLDA'
+coef.PLNfit             Extract model coefficients
+coefficient_path        Extract the regularization path of a PLNnetwork
+                        fit
+compute_offset          Compute offsets from a count data using one of
+                        several normalization schemes
+extract_probs           Extract edge selection frequency in bootstrap
+                        subsamples
+fisher                  Fisher information matrix for Theta
+fitted.PLNfit           Extracts model fitted values from objects
+                        returned by 'PLN' and its variants
+getBestModel.PLNPCAfamily
+                        Best model extraction from a collection of
+                        models
+getModel.PLNPCAfamily   Model extraction from a collection of models
+mollusk                 Mollusk data set
+plot.PLNLDAfit          LDA vizualiation (individual and/or variable
+                        factor map(s)) for a 'PLNPCAfit' object
+plot.PLNPCAfamily       Display the criteria associated with a
+                        collection of PLNPCA fits (a PLNPCAfamily)
+plot.PLNPCAfit          PCA vizualiation (individual and/or variable
+                        factor map(s)) for a 'PLNPCAfit' object
+plot.PLNnetworkfamily   Display various ouputs (goodness-of-fit
+                        criteria, robustness, diagnostic) associated
+                        with a collection of PLNnetwork fits (a
+                        PLNnetworkfamily)
+plot.PLNnetworkfit      Extract and plot the network (aprtial
+                        correlation, support or inverse covariance)
+                        from a 'PLNnetworkfit' object
+predict.PLNLDAfit       Predict group of new samples
+predict.PLNfit          Predict counts of a new sample
+prepare_data            Prepare data for use in PLN models
+rPLN                    PLN RNG
+sigma.PLNfit            Extract variance-covariance of residuals
+                        'Sigma'
+stability_selection     Compute the stability path by stability
+                        selection
+standard_error          Component-wise standard errors of Theta
+trichoptera             Trichoptera data set
+vcov.PLNfit             Calculate Variance-Covariance Matrix for a
+                        fitted 'PLN' model object

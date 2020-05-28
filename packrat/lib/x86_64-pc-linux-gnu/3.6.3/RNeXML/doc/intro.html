@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Carl Boettiger" />
+<meta name="author" content="Scott Chamberlain" />
+<meta name="author" content="Rutger Vos" />
+<meta name="author" content="Hilmar Lapp" />
+
+
+<title>A Brief Introduction to RNeXML</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">A Brief Introduction to RNeXML</h1>
+<h4 class="author">Carl Boettiger</h4>
+<h4 class="author">Scott Chamberlain</h4>
+<h4 class="author">Rutger Vos</h4>
+<h4 class="author">Hilmar Lapp</h4>
+
+
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{A Brief Introduction to RNeXMLL}
+-->
+<p>Read in a <code>nexml</code> file:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">f &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;examples&quot;</span>, <span class="st">&quot;comp_analysis.xml&quot;</span>, <span class="dt">package=</span><span class="st">&quot;RNeXML&quot;</span>)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">nexml &lt;-<span class="st"> </span><span class="kw">nexml_read</span>(f)</a></code></pre></div>
+<p>Pretty-print an overview of the components and metadata that make up the nexml object:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">nexml  <span class="co"># this is the same as show(nexml)</span></a></code></pre></div>
+<pre><code>## A nexml object representing:
+##       1 phylogenetic tree block(s), where:
+##     block 1 contains 1 phylogenetic tree(s) 
+##       2 character block(s), where:
+##     block 1 defines 1 continuous character(s) 
+##     matrix 1 has 10 row(s)
+##     block 2 defines 1 standard/discrete character(s), with 2 states each 
+##      and  0 polymorphic or uncertain state(s) defined 
+##     matrix 2 has 10 row(s) 
+##       10 taxonomic units in 1 block(s) 
+##   Taxa:   taxon_1, taxon_2, taxon_3, taxon_4, taxon_5, taxon_6 ...
+##   Metadata annotations: 
+##  2 at top level 
+##  0 in block 1 at otu level 
+##  0 in block 1 at char level
+##  0 in block 2 at char level 
+##  0 in block 1 at state level
+##  0 in block 2 at state level
+## 
+## Author(s): rvosa
+## 
+## NeXML generated by Bio::Phylo::Project v.0.56 using schema version: 0.9 
+## Size: 289.3 Kb</code></pre>
+<p>Create a summary object of various component and metadata counts (the <code>show()</code> method uses this):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">summary</span>(nexml)</a></code></pre></div>
+<pre><code>## $nblocks
+##      trees       otus characters 
+##          1          1          2 
+## 
+## $ncharacters
+## block.1 block.2 
+##       1       1 
+## 
+## $nstates
+##         block.1 block.2
+## Min.         NA       2
+## 1st Qu.      NA       2
+## Median       NA       2
+## Mean         NA       2
+## 3rd Qu.      NA       2
+## Max.         NA       2
+## 
+## $nnonstdstatedefs
+##         polymorphic uncertain
+## block.1          NA        NA
+## block.2           0         0
+## 
+## $nmatrixrows
+## block.1 block.2 
+##      10      10 
+## 
+## $ntrees
+## block.1 
+##       1 
+## 
+## $notus
+## block.1 
+##      10 
+## 
+## $nmeta
+## $nmeta$nexml
+## [1] 2
+## 
+## $nmeta$otu
+## block.1 
+##       0 
+## 
+## $nmeta$char
+## block.1 block.2 
+##       0       0 
+## 
+## $nmeta$state
+## block.1 block.2 
+##       0       0</code></pre>
+<p>Extract trees from nexml into the <code>ape::phylo</code> format:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">tr &lt;-<span class="st"> </span><span class="kw">get_trees</span>(nexml) <span class="co"># or: as(nexml, &quot;phylo&quot;)</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">plot</span>(tr)</a></code></pre></div>
+<div class="figure">
+<img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-5" />
+<p class="caption">plot of chunk unnamed-chunk-5</p>
+</div>
+<p>Write an <code>ape::phylo</code> tree into the <code>nexml</code> format:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">data</span>(bird.orders)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">nexml_write</span>(bird.orders, <span class="st">&quot;test.xml&quot;</span>, <span class="dt">creator =</span> <span class="st">&quot;Carl Boettiger&quot;</span>)</a></code></pre></div>
+<pre><code>## [1] &quot;test.xml&quot;</code></pre>
+<p>A key feature of NeXML is the ability to formally validate the construction of the data file against the standard (the lack of such a feature in nexus files had lead to inconsistencies across different software platforms, and some files that cannot be read at all). While it is difficult to make an invalid NeXML file from <code>RNeXML</code>, it never hurts to validate just to be sure:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">nexml_validate</span>(<span class="st">&quot;test.xml&quot;</span>)</a></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>Extract metadata from the NeXML file:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">birds &lt;-<span class="st"> </span><span class="kw">nexml_read</span>(<span class="st">&quot;test.xml&quot;</span>)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">get_taxa</span>(birds)</a></code></pre></div>
+<pre><code>##     otu            label xsi.type otus
+## 1  ou37 Struthioniformes       NA  os3
+## 2  ou38     Tinamiformes       NA  os3
+## 3  ou39      Craciformes       NA  os3
+## 4  ou40      Galliformes       NA  os3
+## 5  ou41     Anseriformes       NA  os3
+## 6  ou42    Turniciformes       NA  os3
+## 7  ou43       Piciformes       NA  os3
+## 8  ou44    Galbuliformes       NA  os3
+## 9  ou45   Bucerotiformes       NA  os3
+## 10 ou46      Upupiformes       NA  os3
+## 11 ou47    Trogoniformes       NA  os3
+## 12 ou48    Coraciiformes       NA  os3
+## 13 ou49      Coliiformes       NA  os3
+## 14 ou50     Cuculiformes       NA  os3
+## 15 ou51   Psittaciformes       NA  os3
+## 16 ou52      Apodiformes       NA  os3
+## 17 ou53   Trochiliformes       NA  os3
+## 18 ou54  Musophagiformes       NA  os3
+## 19 ou55     Strigiformes       NA  os3
+## 20 ou56    Columbiformes       NA  os3
+## 21 ou57       Gruiformes       NA  os3
+## 22 ou58    Ciconiiformes       NA  os3
+## 23 ou59    Passeriformes       NA  os3</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">get_metadata</span>(birds) </a></code></pre></div>
+<pre><code>##           property   datatype                 content     xsi.type                                              href Meta
+## 1       dc:creator xsd:string          Carl Boettiger  LiteralMeta                                              &lt;NA&gt; m278
+## 2 dcterms:modified xsd:string 2020-01-28 23:24:19 GMT  LiteralMeta                                              &lt;NA&gt; m279
+## 3       cc:license       &lt;NA&gt;                    &lt;NA&gt; ResourceMeta http://creativecommons.org/publicdomain/zero/1.0/ m280</code></pre>
+<hr />
+<p>Add basic additional metadata:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">  <span class="kw">nexml_write</span>(bird.orders, <span class="dt">file=</span><span class="st">&quot;meta_example.xml&quot;</span>,</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">              <span class="dt">title =</span> <span class="st">&quot;My test title&quot;</span>,</a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">              <span class="dt">description =</span> <span class="st">&quot;A description of my test&quot;</span>,</a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">              <span class="dt">creator =</span> <span class="st">&quot;Carl Boettiger &lt;cboettig@gmail.com&gt;&quot;</span>,</a>
+<a class="sourceLine" id="cb15-5" data-line-number="5">              <span class="dt">publisher =</span> <span class="st">&quot;unpublished data&quot;</span>,</a>
+<a class="sourceLine" id="cb15-6" data-line-number="6">              <span class="dt">pubdate =</span> <span class="st">&quot;2012-04-01&quot;</span>)</a></code></pre></div>
+<pre><code>## [1] &quot;meta_example.xml&quot;</code></pre>
+<p>By default, <code>RNeXML</code> adds certain metadata, including the NCBI taxon id numbers for all named taxa. This acts a check on the spelling and definitions of the taxa as well as providing a link to additional metadata about each taxonomic unit described in the dataset.</p>
+<div id="advanced-annotation" class="section level3">
+<h3>Advanced annotation</h3>
+<p>We can also add arbitrary metadata to a NeXML tree by define <code>meta</code> objects:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">modified &lt;-<span class="st"> </span><span class="kw">meta</span>(<span class="dt">property =</span> <span class="st">&quot;prism:modificationDate&quot;</span>,</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">                 <span class="dt">content =</span> <span class="st">&quot;2013-10-04&quot;</span>)</a></code></pre></div>
+<p>Advanced use requires specifying the namespace used. Metadata follows the RDFa conventions. Here we indicate the modification date using the prism vocabulary. This namespace is included by default, as it is used for some of the basic metadata shown in the previous example. We can see from this list:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">RNeXML<span class="op">:::</span>nexml_namespaces</a></code></pre></div>
+<pre><code>##                                              nex                                              xsi 
+##                      &quot;http://www.nexml.org/2009&quot;      &quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+##                                              xml                                             cdao 
+##           &quot;http://www.w3.org/XML/1998/namespace&quot;                &quot;http://purl.obolibrary.org/obo/&quot; 
+##                                              xsd                                               dc 
+##              &quot;http://www.w3.org/2001/XMLSchema#&quot;               &quot;http://purl.org/dc/elements/1.1/&quot; 
+##                                          dcterms                                            prism 
+##                      &quot;http://purl.org/dc/terms/&quot; &quot;http://prismstandard.org/namespaces/1.2/basic/&quot; 
+##                                               cc                                             ncbi 
+##                 &quot;http://creativecommons.org/ns#&quot;          &quot;http://www.ncbi.nlm.nih.gov/taxonomy#&quot; 
+##                                               tc 
+##  &quot;http://rs.tdwg.org/ontology/voc/TaxonConcept#&quot;</code></pre>
+<p>This next block defines a resource (link), described by the <code>rel</code> attribute as a homepage, a term in the <code>foaf</code> vocabulary. Because <code>foaf</code> is not a default namespace, we will have to provide its URL in the full definition below.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">website &lt;-<span class="st"> </span><span class="kw">meta</span>(<span class="dt">href =</span> <span class="st">&quot;http://carlboettiger.info&quot;</span>, </a>
+<a class="sourceLine" id="cb20-2" data-line-number="2">                <span class="dt">rel =</span> <span class="st">&quot;foaf:homepage&quot;</span>)</a></code></pre></div>
+<p>Here we create a history node using the <code>skos</code> namespace. We can also add id values to any metadata element to make the element easier to reference externally:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">  history &lt;-<span class="st"> </span><span class="kw">meta</span>(<span class="dt">property =</span> <span class="st">&quot;skos:historyNote&quot;</span>, </a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">                  <span class="dt">content =</span> <span class="st">&quot;Mapped from the bird.orders data in the ape package using RNeXML&quot;</span>,</a>
+<a class="sourceLine" id="cb21-3" data-line-number="3">                  <span class="dt">id =</span> <span class="st">&quot;meta123&quot;</span>)</a></code></pre></div>
+<p>For this kind of richer annotation, it is best to build up our NeXML object sequentially. First we will add <code>bird.orders</code> phylogeny to a new phylogenetic object, and then we will add the metadata elements created above to this object. Finally, we will write the object out as an XML file:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">  birds &lt;-<span class="st"> </span><span class="kw">add_trees</span>(bird.orders)</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">  birds &lt;-<span class="st"> </span><span class="kw">add_meta</span>(<span class="dt">meta =</span> <span class="kw">list</span>(history, modified, website),</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">                    <span class="dt">namespaces =</span> <span class="kw">c</span>(<span class="dt">skos =</span> <span class="st">&quot;http://www.w3.org/2004/02/skos/core#&quot;</span>,</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">                                   <span class="dt">foaf =</span> <span class="st">&quot;http://xmlns.com/foaf/0.1/&quot;</span>),</a>
+<a class="sourceLine" id="cb22-5" data-line-number="5">                    <span class="dt">nexml=</span>birds)</a>
+<a class="sourceLine" id="cb22-6" data-line-number="6">  <span class="kw">nexml_write</span>(birds, </a>
+<a class="sourceLine" id="cb22-7" data-line-number="7">              <span class="dt">file =</span> <span class="st">&quot;example.xml&quot;</span>)</a></code></pre></div>
+<pre><code>## [1] &quot;example.xml&quot;</code></pre>
+</div>
+<div id="taxonomic-identifiers" class="section level3">
+<h3>Taxonomic identifiers</h3>
+<p>Add taxonomic identifier metadata to the OTU elements: <!-- This block relies on a robust internet connection that can occassionally fail.  Also it's a bit slow, so don't run it. After all, this command is tested in the unit tests.--></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">nex &lt;-<span class="st"> </span><span class="kw">add_trees</span>(bird.orders)</a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">nex &lt;-<span class="st"> </span><span class="kw">taxize_nexml</span>(nex)</a></code></pre></div>
+</div>
+<div id="working-with-character-data" class="section level2">
+<h2>Working with character data</h2>
+<p>NeXML also provides a standard exchange format for handling character data. The R platform is particularly popular in the context of phylogenetic comparative methods, which consider both a given phylogeny and a set of traits. NeXML provides an ideal tool for handling this metadata.</p>
+<div id="extracting-character-data" class="section level3">
+<h3>Extracting character data</h3>
+<p>We can load the library, parse the NeXML file and extract both the characters and the phylogeny.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">library</span>(RNeXML)</a>
+<a class="sourceLine" id="cb25-2" data-line-number="2">nexml &lt;-<span class="st"> </span><span class="kw">read.nexml</span>(<span class="kw">system.file</span>(<span class="st">&quot;examples&quot;</span>, <span class="st">&quot;comp_analysis.xml&quot;</span>, <span class="dt">package=</span><span class="st">&quot;RNeXML&quot;</span>))</a>
+<a class="sourceLine" id="cb25-3" data-line-number="3">traits &lt;-<span class="st"> </span><span class="kw">get_characters</span>(nexml)</a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">tree &lt;-<span class="st"> </span><span class="kw">get_trees</span>(nexml)</a></code></pre></div>
+<p>(Note that <code>get_characters</code> would return both discrete and continuous characters together in the same data.frame, but we use <code>get_characters_list</code> to get separate data.frames for the continuous <code>characters</code> block and the discrete <code>characters</code> block).</p>
+<p>We can then fire up <code>geiger</code> and fit, say, a Brownian motion model the continuous data and a Markov transition matrix to the discrete states:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">library</span>(geiger)</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="kw">fitContinuous</span>(tree, traits[<span class="dv">1</span>], <span class="dt">ncores=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3"><span class="kw">fitDiscrete</span>(tree, traits[<span class="dv">2</span>], <span class="dt">ncores=</span><span class="dv">1</span>)</a></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

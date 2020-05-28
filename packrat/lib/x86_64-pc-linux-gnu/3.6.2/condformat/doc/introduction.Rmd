@@ -1,0 +1,43 @@
+---
+title: "Introduction to condformat"
+author: "Sergio Oller"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to condformat}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Quickstart
+
+`condformat` prints a data frame with cells formatted according to several
+rules or criteria. It is integrated with the RStudio Viewer or a web browser,
+and it supports `knitr` and `rmarkdown` outputs using both HTML and PDF
+($\LaTeX$) output formats. Other formats are not supported,
+although patches to enable them are welcome.
+
+## Basic syntax
+
+Its syntax should be familiar to `ggplot` users, with tidy evaluation.
+
+    condformat(a_data_frame) %>%          # A data frame to print
+      rule_fill_discrete(ColumnA) %>%     # Add formatting rules to the data frame
+      rule_fill_gradient(ColumnB)
+
+## Example:
+
+```{r}
+data(iris)
+library(condformat)
+condformat(iris[c(1:5,70:75, 120:125),]) %>%
+  rule_fill_discrete(Species) %>%
+  rule_fill_discrete(c(Sepal.Width, Sepal.Length),
+                     expression = Sepal.Width > Sepal.Length - 2.25,
+                     colours = c("TRUE" = "#7D00FF")) %>%
+  rule_fill_gradient2(Petal.Length) %>%
+  rule_text_bold(Sepal.Length, Species == "setosa") %>%
+  rule_text_color(Sepal.Length, ifelse(Species == "setosa", "yellow", "")) %>%
+  rule_fill_bar(Petal.Width, limits = c(0, NA))
+```
+
