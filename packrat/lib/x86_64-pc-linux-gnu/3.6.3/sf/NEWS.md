@@ -1,3 +1,11 @@
+# version 0.9-3
+
+* `st_is_valid` is now a generic
+
+* Windows CRAN binaries use GDAL 3.0.4, PROJ 6.3.1 and GEOS 3.8.0, thanks to Jeroen Ooms' rwinlib work; #1275
+
+* `plot.sf` gains an `extent` argument to set the extent (xlim, ylim) of the plot; `extent` must be an object with an `st_bbox()` method, such as an `sf` object; #1193
+
 # version 0.9-2
 
 * `st_axis_order(TRUE)` gives and error if GDAL has version < 2.5.0

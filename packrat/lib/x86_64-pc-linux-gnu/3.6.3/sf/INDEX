@@ -111,5 +111,6 @@ tibble                  Summarize simple feature type for tibble
 tidyverse               Tidyverse methods for sf objects (remove .sf
                         suffix!)
 transform.sf            transform method for sf objects
-valid                   Make an invalid geometry valid
+valid                   Check validity or make an invalid geometry
+                        valid
 vctrs                   vctrs methods for sf objects

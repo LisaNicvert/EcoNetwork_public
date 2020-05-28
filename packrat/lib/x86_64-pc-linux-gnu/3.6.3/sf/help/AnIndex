@@ -253,7 +253,10 @@ st_is	st_is
 st_is_empty	geos_query
 st_is_longlat	st_is_longlat
 st_is_simple	geos_query
-st_is_valid	geos_query
+st_is_valid	valid
+st_is_valid.sf	valid
+st_is_valid.sfc	valid
+st_is_valid.sfg	valid
 st_is_within_distance	geos_binary_pred
 st_jitter	st_jitter
 st_join	st_join
@@ -265,6 +268,7 @@ st_line_merge	geos_unary
 st_line_sample	st_line_sample
 st_make_grid	st_make_grid
 st_make_valid	valid
+st_make_valid.sfg	valid
 st_multilinestring	st
 st_multipoint	st
 st_multipolygon	st
