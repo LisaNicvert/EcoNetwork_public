@@ -1,0 +1,171 @@
+---
+title: "Benchmark for PLN"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE}
+source("../functions/benchmark.R")
+source("../functions/data_processing.R")
+source("../functions/cooc_classes.R")
+library(dplyr)
+library(ggplot2)
+
+set.seed(42)
+```
+
+# Simulations: what does mu change?
+
+The algo's performance with little aggregation was very poor: can we explain that by too sparse counts?
+
+
+## Difficult setting
+Choose parameters:
+
+```{r}
+# Run 6 times
+n <- 14 # n species (median of above)
+nrow <- 630 + 230 # median + nsamples to compensate lack of positive counts
+mval <- log(.04) # mean value tested to get approx. mean .2 / col
+nrep <- 20
+crit <- "StARS"
+mean <- rep(mval, n)
+
+# # Uncomment to run Erdos-Renyi simulation
+# # Erdos Renyi
+# ncor <- 14
+# g <- sample_gnm(n = n, m = ncor)
+
+# Barabasi
+m <- 2
+gr <- sample_pa(n = n, m = m, directed=FALSE) # Network
+ncor <- length(E(gr))
+                 
+Omega <- generate_precmat(n = n, m = 1, u = .1, v = .3,
+                          gr = gr) # Their correlation matrix      
+
+tri <- Omega[upper.tri(Omega, diag = FALSE)]
+```
+See what does the data look like:
+
+```{r meantest, eval=FALSE}
+g <- generate_obs(nrow = nrow, mean = mean, Omega = Omega)
+head(g$obs)
+```
+
+### Simulation
+```{r}
+# # Uncomment to run simulations
+# df.difficult <- repeat_simul(n = n, nrep = nrep, nrow = nrow,
+#                              mean = mean, Omega= Omega, crit = crit)
+# 
+# write.csv(df.difficult, "simul/difficult_setting_log0.04_25TP_Erdos.csv", row.names = FALSE)
+```
+
+## Second simulation: easy setting
+Choose parameters:
+
+```{r}
+n <- 14 # n species (median of above)
+nrow.easy <- 142 # median
+mval <- log(.2) # mean value tested to get approx. mean .2 / col
+nrep <- 20
+crit <- "StARS"
+mean.easy <- rep(mval, n)
+
+# # Uncomment to run simulations with different parameters than the difficult setting
+# # Erdos Renyi
+# ncor <- 20
+# gr <- sample_gnm(n = n, m = ncor)
+
+# Barabasi
+# m <- 1
+# gr <- sample_pa(n = n, m = m, directed=FALSE) # Network
+# ncor <- length(E(gr))
+
+Omega <- generate_precmat(n = n, m = 1, u = .1, v = .3,
+                          gr = gr) # Their correlation matrix
+
+tri <- Omega[upper.tri(Omega, diag = FALSE)]
+```
+
+The data look like:
+
+```{r meantest2, eval = FALSE}
+g <- generate_obs(nrow = nrow.easy, mean = mean.easy, Omega = Omega)
+head(g$obs)
+```
+
+### Simulation
+```{r}
+# # Uncomment to run simulations
+# df.easy <- repeat_simul(n = n, nrep = nrep, mean = mean.easy,
+#                         nrow = nrow.easy,
+#                         Omega= Omega, crit = crit)
+# 
+# write.csv(df.easy, "simul/easy_setting_log0.2_25TP_Erdos.csv", row.names = FALSE)
+# df.easy
+```
+
+## Graphes and testing
+
+Read the data and plot:
+
+```{r}
+easy_erdos13 <- read.csv("simul/easy_setting_log0.2_13TP_Erdos.csv")
+easy_erdos25 <- read.csv("simul/easy_setting_log0.2_25TP_Erdos.csv")
+easy_barabasi13 <- read.csv("simul/easy_setting_log0.2_13TP_Barabasi.csv")
+easy_barabasi25 <- read.csv("simul/easy_setting_log0.2_25TP_Barabasi.csv")
+
+difficult_erdos13 <- read.csv("simul/difficult_setting_log0.04_13TP_Erdos.csv")
+difficult_erdos25 <- read.csv("simul/difficult_setting_log0.04_25TP_Erdos.csv")
+difficult_barabasi13 <- read.csv("simul/difficult_setting_log0.04_13TP_Barabasi.csv")
+difficult_barabasi25 <- read.csv("simul/difficult_setting_log0.04_25TP_Barabasi.csv")
+
+df <- rbind(easy_erdos13, easy_barabasi13,
+      difficult_erdos13, difficult_barabasi13,
+      easy_erdos25, easy_barabasi25,
+      difficult_erdos25, difficult_barabasi25)
+
+Setting <- c(rep("Aggregated", 2*20),
+             rep("Sparse", 2*20),
+             rep("Aggregated", 2*20),
+             rep("Sparse", 2*20))
+
+Model <- rep(c(rep("Erdős–Rényi", 20), rep("Barabási-Albert", 20)),4)
+
+edges <- c(rep("13 edges", 4*20), rep("25 edges", 4*20))
+
+df <- cbind(df, Setting, Model, edges)
+
+df <- df %>% mutate(sensitivity = TP/(TP+FN))
+```
+
+```{r, fig.width=8, fig.height=4.5}
+ggplot(df) + geom_boxplot(aes(y = sensitivity, x = Setting), fill = "cornflowerblue") + 
+                                facet_grid(~ edges) + theme(axis.title.x = element_blank(),
+                                                            text = element_text(size = 18)) +
+  ylab("Sensitivity") 
+```
+
+Wilcoxon tests:
+
+```{r}
+df13 <- df %>% filter(edges == "13 edges")
+df13 <- df13 %>% dplyr::select(sensitivity, Setting)
+
+df13.e <- df13 %>% filter(Setting == "Aggregated")
+df13.d <- df13 %>% filter(Setting == "Sparse")
+wilcox.test(df13.d$sensitivity, df13.e$sensitivity, alternative = "less")
+
+df25 <- df %>% filter(edges == "25 edges")
+df25 <- df25 %>% dplyr::select(sensitivity, Setting)
+
+df25.e <- df25 %>% filter(Setting == "Aggregated")
+df25.d <- df25 %>% filter(Setting == "Sparse")
+wilcox.test(df25.d$sensitivity, df25.e$sensitivity, alternative = "less")
+```
+
