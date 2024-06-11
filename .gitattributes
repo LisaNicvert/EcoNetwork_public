@@ -4,5 +4,6 @@ low_abundances/simul/* linguist-vendored
 multiscale_inference/output/SAM_thr8_habcov_BIC/* linguist-vendored
 null_model/*.rds linguist-vendored
 packrat/lib-R/x86_64-pc-linux-gnu/*/* linguist-vendored
-packrat/lib/x86_64-pc-linux-gnu/*/*/* linguist-vendored
+packrat/lib/x86_64-pc-linux-gnu/3.6.2/*/*/* linguist-vendored
+packrat/lib/x86_64-pc-linux-gnu/3.6.3/*/*/* linguist-vendored
 packrat/src/*/* linguist-vendored
