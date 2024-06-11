@@ -1,0 +1,5 @@
+data/*/* linguist-vendored
+data/SAM_sample_data.csv linguist-vendored
+low_abundances/simul/* linguist-vendored
+multiscale_inference/output/SAM_thr8_habcov_BIC/* linguist-vendored
+null_model/*.rds linguist-vendored
